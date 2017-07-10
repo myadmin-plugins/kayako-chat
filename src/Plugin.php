@@ -1,6 +1,6 @@
 <?php
 
-namespace Detain\MyAdminKayako;
+namespace Detain\MyAdminKayakoChat;
 
 use Symfony\Component\EventDispatcher\GenericEvent;
 
