@@ -1,5 +1,5 @@
 {
-	"name": "detain/myadmin-kayako-chat",
+	"name": "detain/kayako-chat",
 	"type": "myadmin-plugin",
 	"description": "Kayako handling plugin for MyAdmin",
 	"keywords": [
