@@ -31,8 +31,11 @@ public static function getRequirements(GenericEvent $event) // registers class/f
 public static function getSettings(GenericEvent $event)   // settings subsystem
 ```
 
-`getRequirements` calls `$loader->add_requirement($name, $path)` with paths like:
-`'/../vendor/detain/myadmin-kayako-chat/src/Kayako.php'`
+`getRequirements` may call `$loader->add_requirement($name, $path)`, but this package
+currently registers nothing. It used to register four paths — `class.Kayako` at
+`src/Kayako.php` and three abuse helpers at `src/abuse.inc.php` — and neither file has ever
+existed here. Any path you add must resolve: `include/tf.php` `require_once`s it with no
+`file_exists` guard, so a wrong path is a fatal, not a warning.
 
 ## Lint & Style
 
@@ -53,7 +56,11 @@ php -l src/Plugin.php && php -l tests/PluginTest.php   # syntax check both files
 - Extend `PHPUnit\Framework\TestCase`
 - Use `ReflectionClass` to assert method/property visibility and static modifiers
 - Test method names: `testCanBeInstantiated`, `testGetHooksReturnsArray`, `testGetMenuMethodSignature`
-- Anonymous class pattern for mock loader in `testGetRequirementsCallsAddRequirement`
+- Anonymous class pattern for mock loader in `testGetRequirementsRegistersOnlyFilesThatExist`
+  (which replaced `testGetRequirementsCallsAddRequirement` and
+  `testGetRequirementsRegistersCorrectPaths` — those asserted the four dead registrations
+  were present and spelled a certain way, never that their files existed, so they locked the
+  bug in place instead of catching it)
 - Assert exact static property values: `assertSame('Kayako Plugin', Plugin::$name)`
 
 ## Dependencies
