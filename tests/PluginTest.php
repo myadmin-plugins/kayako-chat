@@ -256,9 +256,22 @@ class PluginTest extends TestCase
     }
 
     /**
-     * Tests that getRequirements calls add_requirement on the event subject.
+     * Tests that every source file getRequirements registers actually exists on disk.
+     *
+     * This replaces testGetRequirementsCallsAddRequirement and
+     * testGetRequirementsRegistersCorrectPaths, which only ever inspected the
+     * registration table -- the names passed to add_requirement and the shape of the
+     * paths -- and never touched the filesystem. That is why they stayed green for
+     * years while every registration in this package pointed at src/Kayako.php or
+     * src/abuse.inc.php, files that have never existed here; function_requirements()
+     * on any of them would have fataled. Asserting the registrations were present
+     * made those tests a lock on the bug, so they were deleted rather than adjusted.
+     *
+     * getRequirements() now registers nothing, so the loop below passes vacuously.
+     * That is the correct result for a package that ships only Plugin.php, and the
+     * check stays in place to catch any future registration that names a missing file.
      */
-    public function testGetRequirementsCallsAddRequirement(): void
+    public function testGetRequirementsRegistersOnlyFilesThatExist(): void
     {
         $calls = [];
         $loader = new class($calls) {
@@ -276,8 +289,9 @@ class PluginTest extends TestCase
             /**
              * @param string $name
              * @param string $path
+             * @param mixed $methods
              */
-            public function add_requirement(string $name, string $path): void
+            public function add_requirement(string $name, string $path, $methods = false): void
             {
                 $this->callsRef[] = [$name, $path];
             }
@@ -286,47 +300,22 @@ class PluginTest extends TestCase
         $event = new GenericEvent($loader);
         Plugin::getRequirements($event);
 
-        $this->assertCount(4, $calls);
-        $this->assertSame('class.Kayako', $calls[0][0]);
-        $this->assertSame('deactivate_kcare', $calls[1][0]);
-        $this->assertSame('deactivate_abuse', $calls[2][0]);
-        $this->assertSame('get_abuse_licenses', $calls[3][0]);
-    }
-
-    /**
-     * Tests that getRequirements registers paths containing the expected package directory.
-     */
-    public function testGetRequirementsRegistersCorrectPaths(): void
-    {
-        $calls = [];
-        $loader = new class($calls) {
-            /** @var array<int, array{string, string}> */
-            private array $callsRef;
-
-            /**
-             * @param array<int, array{string, string}> $calls
-             */
-            public function __construct(array &$calls)
-            {
-                $this->callsRef = &$calls;
-            }
-
-            /**
-             * @param string $name
-             * @param string $path
-             */
-            public function add_requirement(string $name, string $path): void
-            {
-                $this->callsRef[] = [$name, $path];
-            }
-        };
-
-        $event = new GenericEvent($loader);
-        Plugin::getRequirements($event);
-
-        foreach ($calls as $call) {
-            $this->assertStringContainsString('myadmin-kayako-chat', $call[1]);
+        $marker = '/vendor/detain/myadmin-kayako-chat/';
+        foreach ($calls as [$name, $path]) {
+            $position = strpos($path, $marker);
+            $this->assertNotFalse(
+                $position,
+                "Requirement {$name} registers {$path}, which does not point inside this package"
+            );
+            $resolved = dirname(__DIR__) . '/' . substr($path, $position + strlen($marker));
+            $this->assertFileExists(
+                $resolved,
+                "Requirement {$name} registers {$path}, which resolves to a nonexistent file: {$resolved}"
+            );
         }
+
+        // Keeps the test non-risky when nothing is registered, which is the current state.
+        $this->assertIsArray($calls);
     }
 
     /**
