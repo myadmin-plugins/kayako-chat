@@ -1,6 +1,6 @@
 ---
 name: plugin-event-handler
-description: Adds a new static event handler method to `src/Plugin.php` following the `GenericEvent` pattern. Use when user says 'add event handler', 'new hook', 'add to getHooks', or needs to extend plugin functionality. Handles `getSubject()` extraction, ACL checks, and `getHooks()` registration. Do NOT use for modifying existing handlers or creating new plugin classes. NOTE: for a plugin's contract/behavioral tests (tests/ContractTest.php, the shared harness, composer myadmin:scaffold-tests) use the plugin-contract-tests skill instead — this skill's reflection-only guidance predates that harness.
+description: Adds a new static event handler method to `src/Plugin.php` following the `GenericEvent` pattern. Use when user says 'add event handler', 'new hook', 'add to getHooks', or needs to extend plugin functionality. Handles `getSubject()` extraction, ACL checks, and `getHooks()` registration. Do NOT use for modifying existing handlers or creating new plugin classes. For a plugin's contract or behavioral tests (tests/ContractTest.php, the shared harness, composer myadmin:scaffold-tests) use the plugin-contract-tests skill instead — this skill's reflection-only guidance predates that harness.
 ---
 <!-- myadmin-contract-harness-notice -->
 > ### ⚠️ Read this before the rest of the file

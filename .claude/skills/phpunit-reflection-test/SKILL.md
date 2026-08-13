@@ -1,6 +1,6 @@
 ---
 name: phpunit-reflection-test
-description: Scaffolds a PHPUnit test in `tests/` using `ReflectionClass` to verify method signatures, static modifiers, and property visibility. Use when user says 'add test', 'write tests for', or adds a new method to `src/Plugin.php`. Follows patterns in `tests/PluginTest.php`. Do NOT use for integration tests requiring live DB or HTTP. NOTE: for a plugin's contract/behavioral tests (tests/ContractTest.php, the shared harness, composer myadmin:scaffold-tests) use the plugin-contract-tests skill instead — this skill's reflection-only guidance predates that harness.
+description: Scaffolds a PHPUnit test in `tests/` using `ReflectionClass` to verify method signatures, static modifiers, and property visibility. Use when user says 'add test', 'write tests for', or adds a new method to `src/Plugin.php`. Follows patterns in `tests/PluginTest.php`. Do NOT use for integration tests requiring live DB or HTTP. For a plugin's contract or behavioral tests (tests/ContractTest.php, the shared harness, composer myadmin:scaffold-tests) use the plugin-contract-tests skill instead — this skill's reflection-only guidance predates that harness.
 ---
 <!-- myadmin-contract-harness-notice -->
 > ### ⚠️ Read this before the rest of the file
